@@ -1,27 +1,73 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# GITOFY — Production-Ready GitHub Repository, CI/CD & AI Developer Platform
 
-# Run and deploy your AI Studio app
+A production-grade Android developer platform for managing GitHub repositories, Git operations, GitHub Actions CI/CD, build artifacts, and AI-assisted development workflows directly from a mobile device.
 
-This contains everything you need to run your app locally.
+## Core Product Principles
 
-View your app in AI Studio: https://ai.studio/apps/6f4a8493-efc9-403a-a5cc-3c4090f954ba
+1. GitHub remains the remote source of truth.
+2. User approval is required for consequential AI actions.
+3. Security takes priority over convenience.
+4. AI providers must be replaceable.
+5. Provider credentials must never be embedded in the Android APK.
+6. The existing GITOFY codebase must be upgraded before considering unnecessary rewrites.
+7. Long-running operations must survive process death.
+8. Every failure must have an actionable recovery path.
+9. No source project may be destructively modified without explicit user action.
+10. AI must receive only the minimum context required for the requested task.
+11. Secrets must be removed before AI context creation.
+12. Free/low-cost AI models should be preferred when they satisfy the task.
+13. GitHub Actions must remain the primary CI/CD platform.
+14. Production releases must be validated by GitHub Actions.
 
-## Run Locally
+## AI Architecture
 
-**Prerequisites:**  [Android Studio](https://developer.android.com/studio)
+The AI system is provider-agnostic. The Android application does NOT directly contain production AI provider secrets.
 
+```
+GITOFY Android → Authenticated AI Gateway → Provider Router → AI Provider
+```
 
-1. Open Android Studio
-2. Select **Open** and choose the directory containing this project
-3. Allow Android Studio to fix any incompatibilities as it imports the project.
-4. Create a file named `.env` in the project directory and set `GEMINI_API_KEY` in that file to your Gemini API key (see `.env.example` for an example)
-5. Remove this line from the app's `build.gradle.kts` file: `signingConfig = signingConfigs.getByName("debugConfig")`
-6. Run the app on an emulator or physical device
-7. If you have already published your app in AI Studio, please [request upload key reset](https://support.google.com/googleplay/android-developer/answer/9842756#zippy=%2Crequest-an-upload-key-reset) in Google Play Console.
+### AI Gateway
+Responsible for: Provider authentication, Model routing, Rate limiting, Provider health, Context filtering, Secret redaction, Request/response normalization, Usage accounting, Fallback, Retry classification, AI policy enforcement.
 
-## GitHub Actions CI
+### AI Providers
+- **Gemini** — Advanced reasoning, large-context analysis, code generation, multimodal
+- **NVIDIA NIM** — High-performance coding, reasoning, agentic workflows, self-hosted
+- **OpenRouter** — Multi-model routing, provider redundancy, cost optimization, fallback
+- **OpenCode Zen** — Coding tasks, agentic tasks, streaming
+- **Custom Provider** — OpenAI-compatible endpoints, self-hosted, enterprise gateways
 
-The project includes GitHub Actions workflows under `.github/workflows/`.
-The debug workflow builds `:app:assembleDebug` and uploads the APK artifact. The release workflow is manual and supports repository-secret based signing.
+### AI Features
+- Multi-provider routing with capability-based model selection
+- Free-first cost policy (not free-only)
+- Capability-compatible fallback system
+- Provider health monitoring (AVAILABLE/DEGRADED/RATE_LIMITED/UNAVAILABLE)
+- AI Context Engine with context budgeting, secret redaction (15+ secret types), privacy modes
+- AI Chat (scoped: Repository/Workflow/Job/File/General)
+- AI Build Failure Analysis (root cause, evidence, confidence, recommended fix)
+- AI Code Review, AI Patch Generation, AI PR Generation, AI Commit Generation
+- AI Workflow Analysis & Generation (YAML validation, security checks)
+- AI Vision System (screenshot-to-Compose)
+- AI + GitHub Actions Closed Loop (detect → analyze → fix → approve → push → verify)
+
+### AI Security
+- Prompt Injection Defense, AI Hallucination Protection
+- AI Output Validation (schema/safety/permission/action)
+- Tool Calling Security (allowed tools, forbidden operations)
+- AI Audit Log, AI Action Sandbox, AI Permission Policy
+- AI Branch Strategy (ai/fix-* branches, protected branch protection)
+- AI Session & Approval Expiration
+- Deterministic Validation Priority (compiler > AI, test result > AI confidence)
+- AI Mock Architecture (all providers mockable)
+
+## CI/CD
+
+- `ci.yml` — PR pipeline (compile, test, lint, artifact)
+- `security.yml` — Trivy + TruffleHog + dependency review
+- `dependency-review.yml` — PR dependency review
+- `release.yml` — Release pipeline (signed AAB, GitHub Release)
+- `ai-gateway-ci.yml` — AI module specific CI (routing, fallback, security, action tests)
+
+## License
+
+MIT License — see [LICENSE](LICENSE)
